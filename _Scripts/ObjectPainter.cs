@@ -3,37 +3,47 @@ using System.Collections;
 
 public class ObjectPainter : MonoBehaviour {
 
+	public Transform rayOrigin;
 	public Material objMat;
 	public Color baseCol, addCol;
+	public int texSize, brushSize;
 
 	private static Texture2D tex;
+	private static RaycastHit hit;
+	private static int xPix, yPix;
+	private static bool painting;
 
 	void Start(){
-		tex = new Texture2D (1024, 1024, TextureFormat.ARGB32, false);
+		painting = false;
 
-		for (int i=0; i<1024; i++) {
-			for (int j = 0; j < 1024; j++) {
+		objMat.mainTexture = null;
+		tex = new Texture2D (texSize, texSize, TextureFormat.ARGB32, false);
+
+		for (int i = 0; i < texSize; i++) {
+			for (int j = 0; j < texSize; j++) {
 				tex.SetPixel (i, j, baseCol);
 			}
 		}
-			
+		
 		tex.Apply ();
 		objMat.mainTexture = tex;
 	}
 
+	public void togglePainting(){
+		painting = !painting;
+	}
+
 	void Update() {
-		if (Input.GetMouseButton (0)) {
+		if (painting){
 
-			RaycastHit hit;
-			if (Physics.Raycast (Camera.main.ScreenPointToRay (Input.mousePosition), out hit, 100f)) {
-
+			if (Physics.Raycast (rayOrigin.position, rayOrigin.forward, out hit, 100f)) {
 				if (hit.collider.CompareTag ("paintable")) {
-					int xPix = (int)(hit.textureCoord.x * tex.width);
-					int yPix = (int)(hit.textureCoord.y * tex.height);
+					xPix = (int)(hit.textureCoord.x * tex.width);
+					yPix = (int)(hit.textureCoord.y * tex.height);
 
-					for (int i = 0; i < 29; i++) {
-						for (int j = 0; j < 29; j++) {
-							tex.SetPixel (xPix + i, yPix + j, addCol);
+					for (int i = 0; i < brushSize/2; i++) {
+						for (int j = 0; j < brushSize; j++) {
+							tex.SetPixel (xPix + i - brushSize/4, yPix + j - brushSize/2, addCol);
 						}
 					}
 
@@ -44,6 +54,7 @@ public class ObjectPainter : MonoBehaviour {
 
 		if (Input.GetKeyDown (KeyCode.Q)) {
 			objMat.mainTexture = null;
+
 			Application.Quit ();
 			UnityEditor.EditorApplication.isPlaying = false;
 		}
