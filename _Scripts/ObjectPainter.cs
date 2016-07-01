@@ -41,9 +41,11 @@ public class ObjectPainter : MonoBehaviour {
 					xPix = (int)(hit.textureCoord.x * tex.width);
 					yPix = (int)(hit.textureCoord.y * tex.height);
 
-					for (int i = 0; i < brushSize/2; i++) {
+					for (int i = 0; i < brushSize; i++) {
 						for (int j = 0; j < brushSize; j++) {
-							tex.SetPixel (xPix + i - brushSize/4, yPix + j - brushSize/2, addCol);
+							if ((brushSize/2) > Mathf.Sqrt (Mathf.Pow (i - (brushSize / 2), 2f) + Mathf.Pow (j - (brushSize / 2), 2f))) {
+								tex.SetPixel (xPix + i - (brushSize / 2), yPix + j - (brushSize / 2), addCol);
+							}
 						}
 					}
 
