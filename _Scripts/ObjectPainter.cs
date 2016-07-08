@@ -13,6 +13,7 @@ public class ObjectPainter : MonoBehaviour {
 	private static int xPix, yPix;
 	private static bool painting;
 
+
 	void Start(){
 		painting = false;
 
@@ -33,18 +34,21 @@ public class ObjectPainter : MonoBehaviour {
 		painting = !painting;
 	}
 
+
 	void Update() {
 		if (painting){
 
-			if (Physics.Raycast (rayOrigin.position, rayOrigin.forward, out hit, 100f)) {
+			if (Physics.Raycast (rayOrigin.position, Vector3.back, out hit, 100f)) {
 				if (hit.collider.CompareTag ("paintable")) {
+
+
 					xPix = (int)(hit.textureCoord.x * tex.width);
 					yPix = (int)(hit.textureCoord.y * tex.height);
 
-					for (int i=0; i<brushSize; i++) {
-						for (int j=0; j<brushSize; j++) {
-							if ((brushSize/2) > Mathf.Sqrt (Mathf.Pow (i - (brushSize/2), 2f) + Mathf.Pow (j - (brushSize/2), 2f))) {
-								tex.SetPixel (xPix + i - (brushSize/2), yPix + j - (brushSize/2), addCol);
+					for (int i = 0; i < brushSize; i++) {
+						for (int j = 0; j < brushSize; j++) {
+							if ((brushSize / 2) > Mathf.Sqrt (Mathf.Pow (i - (brushSize / 2), 2f) + Mathf.Pow (j - (brushSize / 2), 2f))) {
+								tex.SetPixel (xPix + i - (brushSize / 2), yPix + j - (brushSize / 2), addCol);
 							}
 						}
 					}
@@ -52,6 +56,7 @@ public class ObjectPainter : MonoBehaviour {
 					tex.Apply ();
 				}
 			}
+
 		}
 
 		if (Input.GetKeyDown (KeyCode.Q)) {

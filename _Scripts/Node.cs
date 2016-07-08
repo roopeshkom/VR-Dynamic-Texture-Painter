@@ -3,11 +3,11 @@ using System.Collections;
 
 public class Node{
 
-	public Color color;
+	public Color data;
 	public Node next;
 
-	public Node(Color color){
-		this.color = color;
+	public Node(Color data){
+		this.data = data;
 		this.next = null;
 	}
 }
