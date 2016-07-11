@@ -38,7 +38,7 @@ public class ObjectPainter : MonoBehaviour {
 	void Update() {
 		if (painting){
 
-			if (Physics.Raycast (rayOrigin.position, Vector3.back, out hit, 100f)) {
+			if (Physics.Raycast (Camera.main.ScreenPointToRay(Camera.main.WorldToScreenPoint(rayOrigin.position)), out hit, 100f)) {
 				if (hit.collider.CompareTag ("paintable")) {
 
 

@@ -4,11 +4,13 @@ using System.Collections;
 public class colorPicker : MonoBehaviour {
 
 	public GameObject mainPicker, cone, slider, display;
+	public Transform fingerPos;
 
 	private static GameObject[,] picker;
 	private static Color[] firstColors;
 	private static Vector3 location;
 	private static Color chosenColor;
+	private static bool pickingColor;
 
 	public static Color selectedColor;
 
@@ -16,25 +18,18 @@ public class colorPicker : MonoBehaviour {
 		picker = new GameObject[40, 40]; 
 		firstColors = new Color[40];
 		location = this.gameObject.transform.position;
+		pickingColor = false;
+
 
 		CreatePicker (transform);
 	}
 
 	private void Update(){
-		if (Input.GetMouseButtonDown(0)) {
-			RaycastHit singleHit;
-			if (Physics.Raycast (Camera.main.ScreenPointToRay (Input.mousePosition), out singleHit, 100f)) {
-				if (singleHit.collider.CompareTag ("adder")) {
-					SwabSwapper.colorCycle.push (selectedColor);
-				} else if (singleHit.collider.CompareTag ("swab")) {
-					selectedColor = singleHit.collider.gameObject.GetComponent<Renderer> ().material.color;
-				}
-			}
-		}
-
-		if (Input.GetMouseButton(0)) {
+		if (pickingColor) {
 			RaycastHit hit;
-			if (Physics.Raycast (Camera.main.ScreenPointToRay (Input.mousePosition), out hit, 100f)) {
+			if (Physics.Raycast (Camera.main.ScreenPointToRay (Camera.main.WorldToScreenPoint(fingerPos.position)), out hit, 100f)) {
+				//Debug.DrawRay (fingerPos.position, hit.point, Color.yellow, 2f);
+
 				if (hit.collider.CompareTag ("maincolors")) {
 					Texture2D tex = mainPicker.GetComponent<Renderer> ().material.mainTexture as Texture2D;
 					chosenColor = tex.GetPixel ((int)(hit.textureCoord.x * tex.width), (int)(hit.textureCoord.y * tex.height));
@@ -43,12 +38,18 @@ public class colorPicker : MonoBehaviour {
 					ColorPicker ();
 				} else if (hit.collider.CompareTag ("pickercell")) {
 					selectedColor = hit.collider.gameObject.GetComponent<Renderer> ().material.color;
-					cone.transform.position = hit.point + new Vector3(0,0, -.5f);
-				} 
+					cone.transform.position = hit.point + new Vector3 (0, 0, -.5f);
+				} else {
+					Debug.Log (hit.collider.gameObject);
+				}
 			}
 		}
 
 		display.GetComponent<Renderer> ().material.color = selectedColor;
+	}
+
+	public void togglePicking(){
+		pickingColor = !pickingColor;
 	}
 
 	private static void CreatePicker(Transform parent){
@@ -66,20 +67,6 @@ public class colorPicker : MonoBehaviour {
 				j++;
 			}
 		}
-
-//		for(int i=0; i<picker.GetLength(0); i++) {
-//			for(int j=0; j<picker.GetLength(1); j++) {
-//				picker[i, j] = Instantiate (pickerCell, location, Quaternion.Euler (Vector3.zero)) as GameObject;
-//				picker [i, j].transform.parent = parent;
-//
-//				location.x += .1f;
-//			}
-//
-//			location.x = xStart;
-//			location.y -= .1f;
-//		}
-//
-//		location.y = yStart;
 	}
 
 	private static void ColorPicker(){
